@@ -1,4 +1,4 @@
-name: Test
+name: Upload Test Coverage
 
 on:
   push:
@@ -10,7 +10,6 @@ on:
     branches:
       - main
       - master
-
   pull_request:
     paths-ignore:
       - 'docs/**'
@@ -22,25 +21,24 @@ on:
       - master
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-        node: [12.x, 14.x, 16.x]
-
+  codecov:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '14.x'
 
       - name: Install modules
         run: yarn
 
       - name: Run tests
         run: yarn test
+
+      - name: Upload test coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
